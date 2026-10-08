@@ -1,4 +1,5 @@
-import "./App.css"
+import { useState } from "react";
+import "./App.css";
 
 function formatHour(hour:number): string {
   const suffix = hour < 12 ? "am" : "pm";
@@ -12,14 +13,48 @@ function App() {
     hours.push(h);
   }
 
+  const [tasks, setTasks] = useState<string[]>([]);
+  const [newTask, setNewTask] = useState("");
+
+  function addTask(){
+    const trimmed = newTask.trim();
+    if (trimmed == "") return;
+    setTasks([...tasks, trimmed]);
+    setNewTask("")
+  }
+
   return (
-    <div>
-      <h1>Today</h1>
-      {hours.map((hour) => (
-        <div key={hour} className="hour-row">
-          {formatHour(hour)}
+    <div className="layout">
+      <div className="task-panel">
+        <h2>Tasks</h2>
+        <div className="task-input">
+          <input
+            value={newTask}
+            onChange={(e) => setNewTask(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key == "Enter") addTask();
+            }}
+            placeholder="New task..."
+            />
+            <button onClick={addTask}>Add</button>
         </div>
-      ))}
+        <ul>
+          {tasks.map((task, i) => (
+            <li key={i} className="task-card">
+              {task}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="day-view">
+        <h2>Today</h2>
+        {hours.map((hour) => (
+          <div key={hour} className="hour-row">
+            <span className="hour-label">{formatHour(hour)}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
